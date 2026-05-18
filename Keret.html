@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KERET | Esoterismo e Architettura Sonora</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Font elegantissimi: Cormorant Garamond per i titoli, Outfit per i testi -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Outfit:wght@200;300;400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Colori Base (Intro) */
+            --bg-color1: #070709;
+            --bg-color2: #111116;
+            --bg-color3: #000000;
+            --accent-color: #e0e0e0;
+            --glass-bg: rgba(10, 10, 12, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            
+            /* Timing curve cinematografica */
+            --smooth-curve: cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            color: #ececec;
+            overflow: hidden;
+            background-color: #000;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* --- Sfondo Animato Fluido --- */
+        #background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -2;
+            background: radial-gradient(circle at 30% 40%, var(--bg-color1) 0%, transparent 60%),
+                        radial-gradient(circle at 70% 60%, var(--bg-color2) 0%, transparent 60%),
+                        radial-gradient(circle at 50% 50%, var(--bg-color3) 0%, transparent 100%);
+            background-size: 130% 130%;
+            transition: background 3s var(--smooth-curve);
+            animation: breathe 20s ease-in-out infinite alternate;
+        }
+
+        @keyframes breathe {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.05); }
+        }
+
+        /* --- Canvas Particellare --- */
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            opacity: 0.7;
+            transition: opacity 2s var(--smooth-curve);
+        }
+
+        /* --- Layout Principale --- */
+        .app-container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            padding: 3rem 4rem;
+            gap: 4rem;
+        }
+
+        /* --- Navigazione --- */
+        nav {
+            flex: 0 0 280px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 2rem;
+            z-index: 10;
+            border-right: 1px solid var(--glass-border);
+            padding-right: 2rem;
+            position: relative;
+        }
+
+        .nav-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 3.5rem;
+            font-weight: 300;
+            letter-spacing: 0.2em;
+            margin-bottom: 3rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            background: linear-gradient(to right, #fff, rgba(255,255,255,0.3));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transition: transform 1s var(--smooth-curve), opacity 1s;
+        }
+        
+        .nav-logo:hover {
+            transform: translateX(10px);
+            opacity: 0.8;
+        }
+
+        .nav-item {
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            transition: all 0.6s var(--smooth-curve);
+            position: relative;
+            padding-left: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background-color: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            transition: all 0.6s var(--smooth-curve);
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: #fff;
+            padding-left: 2.5rem;
+        }
+
+        .nav-item:hover::before, .nav-item.active::before {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 10px var(--accent-color);
+        }
+
+        /* --- Contenitore Traslucente (Glassmorphism) --- */
+        main {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 2px; /* Angoli più affilati per eleganza */
+            width: 100%;
+            max-width: 1100px;
+            height: 90%;
+            padding: 4rem 5rem;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.8);
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 1.2s var(--smooth-curve), transform 1.2s var(--smooth-curve);
+            overflow-y: auto;
+            /* Scrollbar elegante in linea */
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-color) transparent;
+        }
+
+        .glass-panel.fading {
+            opacity: 0;
+            transform: translateY(30px) scale(0.98);
+        }
+
+        .glass-panel::-webkit-scrollbar {
+            width: 4px;
+        }
+        .glass-panel::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .glass-panel::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        /* --- Contenuti Interni & Tipografia --- */
+        .content-header {
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 4rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            line-height: 1.1;
+            color: var(--accent-color);
+            transition: color 2s var(--smooth-curve);
+            letter-spacing: 0.05em;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 200;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+
+        .content-body {
+            column-count: 2;
+            column-gap: 4rem;
+        }
+
+        @media (max-width: 1100px) {
+            .content-body { column-count: 1; }
+        }
+
+        h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            font-weight: 400;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            color: var(--accent-color);
+            transition: color 2s var(--smooth-curve);
+            break-after: avoid;
+        }
+        
+        /* Spaziatura per gli h3 successivi al primo */
+        p + h3, ul + h3 {
+            margin-top: 3rem;
+        }
+
+        p {
+            font-size: 1.05rem;
+            line-height: 2;
+            margin-bottom: 2rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 200;
+        }
+
+        .highlight {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 400;
+            font-style: italic;
+            font-size: 1.3rem;
+            color: #fff;
+        }
+
+        ul {
+            list-style-type: none;
+            margin-bottom: 2rem;
+        }
+
+        ul li {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+            position: relative;
+            font-weight: 200;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.8;
+        }
+
+        ul li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 12px;
+            width: 4px;
+            height: 4px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            transition: background-color 2s var(--smooth-curve);
+        }
+
+        .tracklist-container {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .tracklist-container h4 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: rgba(255,255,255,0.4);
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+
+        .track {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.6);
+            display: flex;
+            align-items: baseline;
+            gap: 15px;
+            transition: color 0.4s ease;
+        }
+        
+        .track:hover {
+            color: var(--accent-color);
+        }
+
+        .track-num {
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.3);
+            letter-spacing: 1px;
+        }
+
+        /* --- Animazioni Cascata (Staggered) --- */
+        .animate-up {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 1s var(--smooth-curve) forwards;
+        }
+
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- Responsiveness --- */
+        @media (max-width: 900px) {
+            .app-container {
+                flex-direction: column;
+                padding: 1.5rem;
+                gap: 1.5rem;
+            }
+            nav {
+                flex: 0 0 auto;
+                border-right: none;
+                border-bottom: 1px solid var(--glass-border);
+                padding-right: 0;
+                padding-bottom: 1.5rem;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 1.5rem;
+            }
+            .nav-logo {
+                width: 100%;
+                text-align: center;
+                margin-bottom: 0;
+                font-size: 2.5rem;
+            }
+            .glass-panel {
+                padding: 2.5rem;
+            }
+            h1 { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sfondo e Particelle -->
+    <div id="background-container"></div>
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- Contenitore UI -->
+    <div class="app-container">
+        <!-- Navigazione -->
+        <nav>
+            <div class="nav-logo" onclick="loadSection('intro')">KERET</div>
+            <div class="nav-item active" onclick="loadSection('intro')" id="nav-intro">Filosofia</div>
+            <div class="nav-item" onclick="loadSection('part1')" id="nav-part1">I. Le Origini</div>
+            <div class="nav-item" onclick="loadSection('part2')" id="nav-part2">II. Mass Society</div>
+            <div class="nav-item" onclick="loadSection('part3')" id="nav-part3">III. Medot</div>
+            <div class="nav-item" onclick="loadSection('tech')" id="nav-tech">Architettura Sonora</div>
+        </nav>
+
+        <!-- Area Contenuti -->
+        <main>
+            <div class="glass-panel" id="glass-panel">
+                <div class="content-header" id="ui-header">
+                    <!-- Titoli generati via JS -->
+                </div>
+
+                <div class="content-body" id="ui-content">
+                    <!-- Testi generati via JS -->
+                </div>
+
+                <div class="tracklist-container" id="ui-tracklist-container" style="display: none;">
+                    <h4>Tracce</h4>
+                    <div id="ui-tracklist" style="display: flex; gap: 2rem; flex-wrap: wrap;">
+                        <!-- Tracklist generata via JS -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // --- DATI DELL'ALBUM E TESTI RAFFINATI ---
+        const keretData = {
+            intro: {
+                title: "L'Essenza del Keret",
+                subtitle: "Metamorfosi e Simbolismo Esoterico",
+                colors: { c1: "#0a0a0f", c2: "#14141c", c3: "#000000", accent: "#ffffff" },
+                theme: "intro", 
+                tracks: [],
+                content: `
+                    <p>Il Keret non è una semplice narrazione, ma un <span class="highlight">concetto simbolico ed esoterico</span> che esplora la trascendenza e la distorsione dell'identità umana. È un viaggio attraverso la carne che diventa simbolo, e lo spirito che si piega a nuove geometrie.</p>
+                    <p>È una forza magnetica che unisce e distrugge:</p>
+                    <ul>
+                        <li>La mutazione interiore dell'anima.</li>
+                        <li>L'evoluzione generata dal dolore puro e dall'isolamento rituale.</li>
+                        <li>La fusione esoterica tra natura, carne, coscienza e abisso cosmico.</li>
+                        <li>La frattura definitiva dei paradigmi sociali.</li>
+                    </ul>
+                    <p>L'essere umano viene "reclamato" da un'entità ineffabile, svuotato del suo ego moderno per diventare un simulacro, un <span class="highlight">tempio vivente</span> per una forma di esistenza superiore e inumana.</p>
+                `
+            },
+            part1: {
+                title: "Botanical Claiming",
+                subtitle: "Parte I: La Rifondazione Organica",
+                colors: { c1: "#071f0f", c2: "#223314", c3: "#030a05", accent: "#d4cd96" },
+                theme: "organic",
+                tracks: ["Intro: The First Memories", "Kut Living", "Fields", "The Young Wept", "Better Souls", "Medevic Loner (Part 1)"],
+                content: `
+                    <h3>Il Richiamo del Suolo</h3>
+                    <p>Questa è la genesi. La forma primordiale. Il corpo viene lentamente reclamato dalla natura, non come atto di decomposizione, ma come <span class="highlight">rifondazione biologica ed estetica</span>. Le radici penetrano il derma, i fiori si innestano nelle vene.</p>
+                    
+                    <h3>Qut Living</h3>
+                    <p>Una fase avanzata, consapevole. L'individuo non subisce la mutazione, ma <span class="highlight">la incarna con eleganza innaturale</span>. Vive una solitudine rituale, mosso da una presenza distaccata. È un'esistenza trasformata in puro simbolo vivente.</p>
+
+                    <h3>Il Medevic Loner</h3>
+                    <p>L'archetipo supremo dell'isolamento. Una figura che sopporta il peso gravoso del Keret. Non vi è più appartenenza sociale, solo un dolore silenzioso e una visione superiore. È colui che è stato mutato così intimamente da rendere impossibile ogni ritorno alla forma umana precedente.</p>
+                `
+            },
+            part2: {
+                title: "Mass Society",
+                subtitle: "Parte II: L'Assimilazione Sistemica",
+                colors: { c1: "#08061a", c2: "#1d1745", c3: "#020108", accent: "#a48ce6" },
+                theme: "grid",
+                tracks: ["Medevic Loner (Part 2)", "Velvet's Lies", "Coming soon..."],
+                content: `
+                    <h3>La Macchina Divoratrice</h3>
+                    <p>Se la fase botanica altera la carne del singolo, la Mass Society <span class="highlight">reclama e riscrive la struttura dell'umanità intera</span>. La folla smette di essere un insieme di individui e si fonde in un organismo omologato, anestetizzato, geometricamente perfetto ma privo di anima.</p>
+                    
+                    <h3>L'Entità Replicante</h3>
+                    <p>La società diventa un sistema dedito alla soppressione del sé. Movimenti sincronizzati, sorrisi vuoti, architetture urbane che opprimono con sterile eleganza. L'umanità è trasmutata in <span class="highlight">un'unica entità replicante</span>, programmata per eseguire.</p>
+
+                    <h3>Resistenza o Oblio</h3>
+                    <p>Nel dominio del Mass Society, due vie si profilano: soccombere all'assimilazione, divenendo un ingranaggio dormiente della struttura, oppure abbracciare la <span class="highlight">Resistenza Keretica</span>—mantenere viva la fiamma della coscienza pur muovendosi nel freddo vuoto della moltitudine.</p>
+                `
+            },
+            part3: {
+                title: "Il Sigillo Infrangibile",
+                subtitle: "Parte III: Medot",
+                colors: { c1: "#2b0404", c2: "#140101", c3: "#400000", accent: "#ff6b6b" },
+                theme: "embers",
+                tracks: ["DHCP", "Angel", "Rose", "The Touches"],
+                content: `
+                    <h3>Il Marchio Divino</h3>
+                    <p>Nella lingua degli dei, Medot significa <span class="highlight">"colui che porta il marchio"</span>. È un sigillo ancestrale, scalfito nell'anima sin dall'alba dell'esistenza. Emerge violentemente quando l'individuo smarrisce il proprio fulcro, un violento promemoria della propria natura immortale.</p>
+                    
+                    <h3>L'Alchimia del Dolore</h3>
+                    <p>Medot è intrecciato a doppio filo con la verità cosmica. La verità nuda scortica la mente, lasciando un dolore intimo e abissale. Ma in questa fase, la sofferenza non è condanna: <span class="highlight">è carburante per l'illuminazione</span>.</p>
+                    <p>Il limite della carne viene infranto, l'illusione della società collassa. Il dolore si trasforma in pura consapevolezza espansa, svelando infine il sé superiore, libero dalle catene terrene.</p>
+                `
+            },
+            tech: {
+                title: "L'Architettura del Suono",
+                subtitle: "Ingegneria Acustica e Frequenze Filosofiche",
+                colors: { c1: "#06131f", c2: "#03282b", c3: "#01080a", accent: "#45f5e7" },
+                theme: "waves", // Tema speciale
+                tracks: [],
+                content: `
+                    <h3>Design Acustico per il Botanical Keret</h3>
+                    <p>Per trasmettere l'idea di radici e crescita organica, il suono si fonda su <span class="highlight">Risonanze Terrestri</span>. Utilizziamo oscillatori a bassa frequenza (LFO) sintonizzati sulla Risonanza di Schumann (7.83Hz), portati all'udibile tramite armonici. Field recordings di legno che si spezza e foglie secche vengono passati attraverso sintetizzatori granulari per creare un "respiro" vegetale, asimmetrico e vivo.</p>
+                    
+                    <h3>La Sintesi dell'Alienazione (Mass Society)</h3>
+                    <p>L'omologazione sociale richiede una rigidità algoritmica. Le ritmiche sono strettamente quantizzate al millisecondo. Si sfrutta la <span class="highlight">Sintesi FM (Modulazione di Frequenza)</span> per generare timbri freddi, metallici e industriali. Dissonanze basate sul ronzio di rete elettrica (Mains Hum a 50Hz/60Hz) sono state incluse in sottofondo per generare una sensazione di ansia suburbana subconscia. Onde quadre e distorsioni di fase rappresentano voci umane private del loro "calore".</p>
+
+                    <h3>Trascendenza Eterea e Medot</h3>
+                    <p>Il superamento del dolore fisico è tradotto in suono tramite spazi immensi. Usiamo algoritmi di <span class="highlight">riverberazione algoritmica infinita (Shimmer Reverb)</span> che spostano il tono di un'ottava superiore (Pitch Shifting) creando cori angelici artificiali. I cori o i lamenti vocali vengono micro-campionati, decostruiti e spalmati nel panorama stereo, accordati seguendo scale microtonali per conferire un senso di spiritualità estraniante e cosmica.</p>
+                `
+            }
+        };
+
+        // --- GESTIONE UI E TRANSIZIONI ---
+        let currentTheme = 'intro';
+
+        function loadSection(sectionKey) {
+            const data = keretData[sectionKey];
+            if(!data) return;
+
+            // Aggiorna Navigazione
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById('nav-' + sectionKey).classList.add('active');
+
+            // Fade Out
+            const panel = document.getElementById('glass-panel');
+            panel.classList.add('fading');
+
+            // Cambia CSS Variables (Smooth Background e Colori)
+            document.documentElement.style.setProperty('--bg-color1', data.colors.c1);
+            document.documentElement.style.setProperty('--bg-color2', data.colors.c2);
+            document.documentElement.style.setProperty('--bg-color3', data.colors.c3);
+            document.documentElement.style.setProperty('--accent-color', data.colors.accent);
+
+            // Cambia Logica Particelle
+            currentTheme = data.theme;
+            initParticles(); 
+
+            // Applica il testo dopo il fade out
+            setTimeout(() => {
+                // Header (Titolo + Sottotitolo) animato
+                document.getElementById('ui-header').innerHTML = `
+                    <h1 class="animate-up" style="animation-delay: 0.1s">${data.title}</h1>
+                    <h2 class="animate-up" style="animation-delay: 0.2s">${data.subtitle}</h2>
+                `;
+
+                // Wrapper per animare il contenuto
+                document.getElementById('ui-content').innerHTML = `
+                    <div class="animate-up" style="animation-delay: 0.3s">
+                        ${data.content}
+                    </div>
+                `;
+
+                // Tracklist
+                const tracklistContainer = document.getElementById('ui-tracklist-container');
+                const tracklistList = document.getElementById('ui-tracklist');
+                
+                if (data.tracks && data.tracks.length > 0) {
+                    tracklistContainer.style.display = 'flex';
+                    tracklistList.innerHTML = data.tracks.map((track, i) => 
+                        `<div class="track animate-up" style="animation-delay: ${0.4 + (i*0.05)}s">
+                            <span class="track-num">${(i+1).toString().padStart(2, '0')}</span> ${track}
+                        </div>`
+                    ).join('');
+                } else {
+                    tracklistContainer.style.display = 'none';
+                }
+
+                // Scroll To Top fluido
+                panel.scrollTo({top: 0, behavior: 'smooth'});
+
+                // Fade In
+                panel.classList.remove('fading');
+            }, 1000); // Sincronizzato col transition-duration del CSS
+        }
+
+        // --- MOTORE PARTICELLARE CANVAS AVANZATO ---
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particlesArray = [];
+        let w, h;
+
+        function resizeCanvas() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor(index) {
+                this.x = Math.random() * w;
+                this.y = Math.random() * h;
+                this.size = Math.random() * 1.5 + 0.5;
+                this.angle = Math.random() * Math.PI * 2;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                
+                // Variabili per il tema "waves" (Technical Section)
+                this.index = index; 
+                this.baseY = this.y;
+            }
+
+            update() {
+                if (currentTheme === 'organic') {
+                    // Botanical: Fluidi, curve morbide, lenti
+                    this.angle += 0.01;
+                    this.x += Math.cos(this.angle) * 0.5 + this.vx;
+                    this.y += Math.sin(this.angle) * 0.5 + this.vy;
+                    ctx.fillStyle = `rgba(212, 205, 150, ${Math.random() * 0.4 + 0.1})`;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size * 1.5, 0, Math.PI * 2);
+                    ctx.fill();
+
+                } else if (currentTheme === 'grid') {
+                    // Mass Society: Matrix-like, movimenti geometrici a 90 gradi
+                    if(Math.sin(this.angle) > 0) {
+                        this.x += (this.vx > 0 ? 1 : -1) * 0.8;
+                    } else {
+                        this.y += (this.vy > 0 ? 1 : -1) * 0.8;
+                    }
+                    if(Math.random() < 0.005) this.angle += Math.PI / 2; // Gira di 90 gradi a caso
+                    
+                    ctx.fillStyle = `rgba(164, 140, 230, 0.3)`; 
+                    ctx.fillRect(this.x, this.y, this.size * 2, this.size * 2);
+
+                } else if (currentTheme === 'embers') {
+                    // Medot: Tizzoni che fluttuano elegantemente verso l'alto
+                    this.x += Math.sin(this.angle) * 0.5;
+                    this.y -= (Math.random() * 1.5 + 0.5); // Sale
+                    this.angle += 0.02;
+                    
+                    let alpha = (this.y / h);
+                    if(alpha < 0) alpha = 0;
+
+                    ctx.fillStyle = `rgba(255, 107, 107, ${alpha * 0.8})`;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size * 2, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    if (this.y < 0) { this.y = h; this.x = Math.random() * w; }
+
+                } else if (currentTheme === 'waves') {
+                    // Technical/Frequenze: Onde Sinusoidali incrociate (Oscilloscopio)
+                    this.x += 1; // Flusso verso destra
+                    // Calcolo della sinusoide basato su tempo (Date.now) e posizione X
+                    let time = Date.now() * 0.001;
+                    let freq = (this.index % 3 + 1) * 0.01; // diverse frequenze
+                    let amp = 50 + (this.index % 5) * 10;
+                    
+                    this.y = this.baseY + Math.sin((this.x * freq) + time) * amp;
+
+                    ctx.fillStyle = `rgba(69, 245, 231, 0.4)`;
+                    ctx.fillRect(this.x, this.y, 1.5, 1.5);
+                    
+                    if (this.x > w) { this.x = 0; }
+
+                } else {
+                    // Intro: Polvere cosmica immobile
+                    this.x += this.vx * 0.1;
+                    this.y += this.vy * 0.1;
+                    ctx.fillStyle = `rgba(255, 255, 255, 0.15)`;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                // Wrap-around generale (tranne per chi ha regole custom sopra)
+                if(currentTheme !== 'embers' && currentTheme !== 'waves') {
+                    if (this.x < 0) this.x = w;
+                    if (this.x > w) this.x = 0;
+                    if (this.y < 0) this.y = h;
+                    if (this.y > h) this.y = 0;
+                }
+            }
+        }
+
+        function initParticles() {
+            particlesArray = [];
+            let numParticles = 120;
+            if(currentTheme === 'grid') numParticles = 180;
+            if(currentTheme === 'embers') numParticles = 90;
+            if(currentTheme === 'waves') numParticles = 250; // Molte particelle per tracciare le onde
+
+            for (let i = 0; i < numParticles; i++) {
+                particlesArray.push(new Particle(i));
+            }
+        }
+
+        function animateParticles() {
+            // Effetto scia per il tema waves
+            if(currentTheme === 'waves' || currentTheme === 'grid') {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+                ctx.fillRect(0, 0, w, h);
+            } else {
+                ctx.clearRect(0, 0, w, h);
+            }
+
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+            }
+            requestAnimationFrame(animateParticles);
+        }
+
+        // --- INIZIALIZZAZIONE ---
+        window.onload = () => {
+            initParticles();
+            animateParticles();
+            loadSection('intro'); // Primo caricamento
+        };
+    </script>
+</body>
+</html>
